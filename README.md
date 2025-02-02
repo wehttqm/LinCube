@@ -3,4 +3,3 @@ A cube with 96 LED's controlled by an ESP32, to practice RGB effect implementati
 
 ![alt text](https://github.com/wehttqm/LinCube/blob/main/images/IMG_2751.heic?raw=true)
 ![alt text](https://github.com/wehttqm/LinCube/blob/main/images/IMG_2757.heic?raw=true)
-(https://github.com/wehttqm/LinCube/blob/main/images/IMG_2751.heic?raw=true)
