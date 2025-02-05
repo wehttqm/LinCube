@@ -7,7 +7,8 @@ CRGB leds[NUM_LEDS];
 double flat_points[NUM_LEDS][3];
 
 enum Effect {
-  RAINBOW
+  RAINBOW,
+  MOVING_PLANE
 };
 enum Effect current_effect;
 
@@ -64,9 +65,9 @@ void flatten_points() {
   }
  }
 
-void setup() {
+void setup() {  
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setBrightness(4);
+  FastLED.setBrightness(50);
   // limit my draw to 1A at 5v of power draw
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
 
@@ -78,7 +79,6 @@ void setup() {
 }
 
 void rainbow() {
-  delay(3);
   int index = 0;
 
   int indexs[6 * 4 * 4];
@@ -109,11 +109,47 @@ void rainbow() {
   }
 }
 
+int width = 20;
+void moving_plane() {
+  int indexs[6 * 4 * 4];
+  for (size_t i = 0; i < 6 * 4 * 4; i++) {
+    indexs[i] = i;
+  }
+  qsort(indexs, 6 * 4 * 4, sizeof(indexs[0]), sortByHeight);
+
+  double lowestZ = flat_points[indexs[0]][2];
+  double highestZ = flat_points[indexs[6 * 4 * 4 - 1]][2];
+
+  static double position = highestZ;
+  static double offset = -0.1;
+  for (size_t i = 0; i < 6 * 4 * 4; i++) {
+    double distance = abs(flat_points[i][2] - position);
+    if (distance <= width) {
+      leds[i] = CHSV(200, 255, 255*(1-(distance/width)));
+    } else {
+      leds[i] = CHSV(0, 0, 0);
+    }
+  }
+  FastLED.show();
+  position += offset;
+  
+  if (position < lowestZ) {
+    offset = 0.1;
+  } else if (position > highestZ) {
+    offset = -0.1;
+  }
+
+}
+
 
 void loop() {
   switch(current_effect) {
     case RAINBOW:
       rainbow();
+      break;
+    case MOVING_PLANE:
+      moving_plane();
+      break;
   }
 }
 
